@@ -10,6 +10,14 @@ from .forms import RegisterForm, RecipeForm
 from .models import Recipe
 
 
+def about(request):
+    context = {
+        'title': 'Главная',
+
+    }
+    return render(request, 'v0_app/about.html', context)
+
+
 def logout_view(request):
     logout(request)
     messages.success(request, 'Вы вышли из аккаунта')
