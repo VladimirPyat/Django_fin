@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.auth.password_validation import CommonPasswordValidator
 
+from .models import Recipe, Category
+
+
 class RegisterForm(forms.Form):
     login_ = forms.CharField(max_length=50, label='Логин',
                            widget=forms.TextInput(attrs={'required': 'True'}))
@@ -19,3 +22,25 @@ class RegisterForm(forms.Form):
 
         return cleaned_data
 
+
+class RecipeForm(forms.ModelForm):
+    image = forms.ImageField(label='Загрузить изображение')
+    cook_time = forms.IntegerField(label='Время готовки, мин.')
+
+    class Meta:
+        model = Recipe
+        fields = ['name', 'description', 'cook_steps', 'ingredients', 'cook_time', 'image', 'category']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+            'cook_steps': forms.Textarea(attrs={'rows': 6}),
+            'ingredients': forms.Textarea(attrs={'rows': 6}),
+            'category': forms.Select(choices=Category.objects.all()),
+        }
+
+        labels = {
+            'name': 'Название',
+            'description': 'Описание',
+            'cook_steps': 'Этапы приготовления',
+            'ingredients': 'Ингредиенты',
+            'category': 'Категория',
+        }

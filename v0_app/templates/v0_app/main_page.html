@@ -1,0 +1,21 @@
+{% extends "v0_app/base.html" %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <p>Привет, {{ username }}</p>
+    {% endif %}
+
+    <h3> Недавние записи </h3>
+
+    <ul>
+        {% for recipe in latest_recipes %}
+            <li><a href="{% url 'recipe_show' pk=recipe.pk %}">{{ recipe }}</a></li>
+        {% endfor %}
+    </ul>
+
+
+{% endblock %}
+
+
+
+

@@ -1,16 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-from .forms import RegisterForm
+from .forms import RegisterForm, RecipeForm
+from .models import Recipe
 
-
-def main_page(request):
-    context = {'title': 'Главная'}
-    return render(request, 'v0_app/blank.html', context)
 
 def logout_view(request):
     logout(request)
@@ -60,3 +58,51 @@ def register(request):
     else:
         form = RegisterForm()
     return render(request, 'v0_app/register.html', {'form': form})
+
+
+def main_page(request):
+    user = request.user
+    results_qty = 3
+    latest_recipes = Recipe.objects.order_by('-created_at')[:results_qty]
+    context = {
+        'title': 'Главная',
+        'username': user.username,
+        'latest_recipes': latest_recipes,
+    }
+    return render(request, 'v0_app/main_page.html', context)
+
+@login_required
+def recipe_add(request):
+    if request.method == 'POST':
+        form = RecipeForm(request.POST, request.FILES)
+        if form.is_valid():
+            recipe = form.save(commit=False)
+            recipe.author = request.user
+            recipe.save()
+            messages.success(request, f'Рецепт {recipe.id} добавлен')
+            return redirect('recipe_add')
+    else:
+        form = RecipeForm()
+
+    context = {
+        'title': 'Добавить рецепт',
+        'form': form,
+    }
+
+    return render(request, 'v0_app/recipe_add.html', context)
+
+def recipe_show(request, pk):
+    recipe_find = Recipe.objects.filter(id=pk).first()
+    if recipe_find is None:
+        messages.error(request, 'Рецепт не найден')
+        return render(request, 'v0_app/blank.html')
+    else:
+        ingredients_list = recipe_find.ingredients.split('\n')
+        cook_steps_list = recipe_find.cook_steps.split('\n')
+        context = {
+            'recipe': recipe_find,
+            'ingredients_list': ingredients_list,
+            'cook_steps_list': cook_steps_list,
+        }
+        return render(request, 'v0_app/recipe_show.html', context)
+
