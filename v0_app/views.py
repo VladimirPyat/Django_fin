@@ -79,7 +79,7 @@ def main_page(request):
     }
     return render(request, 'v0_app/main_page.html', context)
 
-@login_required
+
 def recipe_add(request):
     if request.method == 'POST':
         form = RecipeForm(request.POST, request.FILES)
@@ -97,7 +97,14 @@ def recipe_add(request):
         'form': form,
     }
 
-    return render(request, 'v0_app/recipe_add.html', context)
+    # Проверка на аутентификацию пользователя
+    if request.user.is_authenticated:
+        return render(request, 'v0_app/recipe_add.html', context)
+    else:
+        messages.success(request, 'Необходима авторизация')
+        return redirect('login')
+
+
 
 def recipe_show(request, pk):
     recipe_find = Recipe.objects.filter(id=pk).first()
