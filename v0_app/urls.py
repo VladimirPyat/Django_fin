@@ -10,6 +10,7 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('register/', views.register, name='register'),
     path('recipe_add/', views.recipe_add, name='recipe_add'),
+    path('recipe_find/', views.recipe_find, name='recipe_find'),
     path('recipe_show/<int:pk>', views.recipe_show, name='recipe_show'),
     path('', views.main_page, name='main_page'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

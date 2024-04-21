@@ -4,14 +4,20 @@ from django.contrib.auth.password_validation import CommonPasswordValidator
 from .models import Recipe, Category
 
 
+class CategoryFilterForm(forms.Form):
+    categories = Category.objects.all()
+    category_choices = [('', 'Выберите категорию')] + [(category.id, category.name) for category in categories]
+    category = forms.ChoiceField(choices=category_choices, required=False)
+
+
 class RegisterForm(forms.Form):
     login_ = forms.CharField(max_length=50, label='Логин',
-                           widget=forms.TextInput(attrs={'required': 'True'}))
-    password = forms.CharField(max_length=50, label='Пароль', widget=forms.PasswordInput(attrs={'required': 'True'}))
+                             widget=forms.TextInput(attrs={'required': 'True'}))
+    password = forms.CharField(max_length=50, label='Пароль',
+                               widget=forms.PasswordInput(attrs={'required': 'True'}))
     confirm_password = forms.CharField(max_length=50, label='Подтверждение пароля',
                                        widget=forms.PasswordInput(attrs={'required': 'True'}))
     email = forms.EmailField(label='email')
-
 
     def clean(self):
         cleaned_data = super().clean()

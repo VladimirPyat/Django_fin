@@ -5,15 +5,15 @@
 
     <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <table>
-        {% for field in form %}
+        <table>
+            {% for field in form %}
             <tr>
                 <td>{{ field.label_tag }}</td>
                 <td>{{ field }}</td>
             </tr>
-        {% endfor %}
-    </table>
+            {% endfor %}
+        </table>
     <button type="submit">Добавить рецепт</button>
-</form>
+    </form>
 
 {% endblock %}

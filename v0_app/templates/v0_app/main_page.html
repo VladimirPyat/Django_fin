@@ -8,10 +8,15 @@
     <h3> Недавние записи </h3>
 
     <ul>
-        {% for recipe in latest_recipes %}
-            <li><a href="{% url 'recipe_show' pk=recipe.pk %}">{{ recipe }}</a></li>
-        {% endfor %}
-    </ul>
+    {% for recipe in latest_recipes %}
+        <li>
+            <a href="{% url 'recipe_show' pk=recipe.pk %}">
+                <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" width="50" height="50">
+                {{ recipe }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
 
 
 {% endblock %}

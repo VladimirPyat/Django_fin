@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-from .forms import RegisterForm, RecipeForm
+from .forms import RegisterForm, RecipeForm, CategoryFilterForm
 from .models import Recipe
 
 
@@ -72,6 +72,7 @@ def main_page(request):
     user = request.user
     results_qty = 3
     latest_recipes = Recipe.objects.order_by('-created_at')[:results_qty]
+    print(latest_recipes)
     context = {
         'title': 'Главная',
         'username': user.username,
@@ -97,7 +98,6 @@ def recipe_add(request):
         'form': form,
     }
 
-    # Проверка на аутентификацию пользователя
     if request.user.is_authenticated:
         return render(request, 'v0_app/recipe_add.html', context)
     else:
@@ -105,6 +105,28 @@ def recipe_add(request):
         return redirect('login')
 
 
+def recipe_find(request):
+    if request.method == 'POST':
+        form = CategoryFilterForm(request.POST)
+        if form.is_valid():
+            category = form.cleaned_data['category']
+            if category == '':
+                find_recipes = Recipe.objects.all()
+            else:
+                find_recipes = Recipe.objects.filter(category=category)
+            context = {
+                'title': 'Результаты поиска',
+                'form': form,
+                'find_recipes': find_recipes,
+            }
+    else:
+        form = CategoryFilterForm()
+        context = {
+            'title': 'Поиск рецепта',
+            'form': form,
+        }
+
+    return render(request, 'v0_app/find_recipe.html', context)
 
 def recipe_show(request, pk):
     recipe_find = Recipe.objects.filter(id=pk).first()
